@@ -1,5 +1,5 @@
 window {
-  background-image: url("vote.png");
+  background-image: url("../resources/day.png");
   background-repeat: repeat-x;
   background-size: cover;
 }
@@ -18,7 +18,7 @@ entry {
 }
 
 label {
-  color: lightgrey;
+  color: #d3d3d3;
   background-color: darkred;
   font-size: 20px;
   border-radius: 5px;

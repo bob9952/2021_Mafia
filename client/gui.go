@@ -15,7 +15,7 @@ var buttonGrid *gtk.Grid
 
 func createLoginWindow() *gtk.Window {
 
-	loadCSS("styleNight.css")
+	loadCSS("css/styleNight.css")
 
 	win, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
 	if err != nil {
@@ -94,7 +94,7 @@ func resetToMainWindow(win *gtk.Window) {
 	label.SetMarginBottom(10)
 
 	gridPlayer.Add(label)
-	pixbuf, _ := gdk.PixbufNewFromFile("awesomeface.png")
+	pixbuf, _ := gdk.PixbufNewFromFile("resources/awesomeface.png")
 	pixbuf, _ = pixbuf.ScaleSimple(100, 100, gdk.INTERP_BILINEAR)
 	img, _ := gtk.ImageNew()
 	img.SetFromPixbuf(pixbuf)
@@ -198,7 +198,7 @@ func UpdateText2(msg string) {
 		name := msg[0:indexDots]
 		buffer.InsertMarkup(end, "\n<span foreground = \""+colors[name]+"\">"+name+":</span>"+msg[indexDots+1:])
 	} else {
-		buffer.Insert(end, "\n" + msg)
+		buffer.Insert(end, "\n"+msg)
 	}
 	text2.ScrollToMark(buffer.GetMark("end"), 0.0, true, 0.5, 0.5)
 	text2.SetIndent(10)
@@ -266,7 +266,7 @@ func UpdateJoin(win *gtk.Window, players map[string]bool) {
 
 func UpdateNight(win *gtk.Window, players map[string]bool) {
 
-	loadCSS("styleNight.css")
+	loadCSS("css/styleNight.css")
 
 	children := buttonGrid.GetChildren()
 	for child := children; child != nil; child = child.Next() {
@@ -351,7 +351,7 @@ func UpdateNight(win *gtk.Window, players map[string]bool) {
 			})
 
 			gridPlayer.Add(btnPlayer2)
-			
+
 			btnPlayer3, _ := gtk.ButtonNewWithLabel("skip")
 			btnPlayer3.SetName(player)
 
@@ -368,7 +368,7 @@ func UpdateNight(win *gtk.Window, players map[string]bool) {
 			btnPlayer1.Connect("clicked", func() {
 				SentMessages <- "/pull skip\n"
 			})
-			
+
 			gridPlayer.Add(btnPlayer1)
 		}
 
@@ -385,7 +385,7 @@ func UpdateNight(win *gtk.Window, players map[string]bool) {
 
 func UpdateDay(win *gtk.Window, players map[string]bool) {
 
-	loadCSS("styleDay.css")
+	loadCSS("css/styleDay.css")
 
 	children := buttonGrid.GetChildren()
 	for child := children; child != nil; child = child.Next() {
@@ -426,7 +426,7 @@ func UpdateDay(win *gtk.Window, players map[string]bool) {
 
 func UpdateVote(win *gtk.Window, players map[string]bool) {
 
-	loadCSS("styleVote.css")
+	loadCSS("css/styleVote.css")
 
 	children := buttonGrid.GetChildren()
 	for child := children; child != nil; child = child.Next() {

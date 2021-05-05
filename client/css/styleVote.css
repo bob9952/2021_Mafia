@@ -1,5 +1,5 @@
 window {
-  background-image: url("night.png");
+  background-image: url("../resources/vote.png");
   background-repeat: repeat-x;
   background-size: cover;
 }

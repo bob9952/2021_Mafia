@@ -1,5 +1,5 @@
 window {
-  background-image: url("day.png");
+  background-image: url("../resources/night.png");
   background-repeat: repeat-x;
   background-size: cover;
 }
@@ -18,7 +18,7 @@ entry {
 }
 
 label {
-  color: #d3d3d3;
+  color: lightgrey;
   background-color: darkred;
   font-size: 20px;
   border-radius: 5px;
