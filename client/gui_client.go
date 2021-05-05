@@ -25,8 +25,11 @@ const (
 	JESTER
 )
 
-var PoslatePoruke = make(chan string)
-var PrimljenePoruke = make(chan string)
+// Channel for sending messages to the server
+var SentMessages = make(chan string)
+// Channel for incoming messages from the server
+var ReceivedMessages = make(chan string)
+
 var isOwner bool
 var players = make(map[string]bool)
 var pictures = make(map[string]string)
@@ -49,7 +52,7 @@ func main() {
 
 	conn, err := net.Dial("tcp", address)
 	if err != nil {
-		fmt.Println("error")
+		fmt.Println("Could not connect to server. Please try again later.")
 		os.Exit(1)
 	}
 
@@ -59,15 +62,16 @@ func main() {
 		for {
 			b := make([]byte, 4)
 			io.ReadFull(connbuf, b)
-			velicina := int(uint(b[0]) | uint(b[1])<<8 | uint(b[2])<<16 | uint(b[3])<<24)
-			tmp := make([]byte, velicina+1)
+			messageLength := int(uint(b[0]) | uint(b[1])<<8 | uint(b[2])<<16 | uint(b[3])<<24)
+			tmp := make([]byte, messageLength + 1)
 			_, err := io.ReadFull(connbuf, tmp)
 
 			if err != nil {
-				fmt.Println("error se desio")
+				fmt.Println("The server is down. Please try again later.")
+				os.Exit(1)
 				break
 			}
-			PrimljenePoruke <- string(tmp[:velicina])
+			ReceivedMessages <- string(tmp[:messageLength])
 		}
 
 	}()
@@ -81,7 +85,7 @@ func main() {
 	go func() {
 		for {
 			select {
-			case poruka1 := <-PrimljenePoruke:
+			case poruka1 := <-ReceivedMessages:
 
 				poruka1 = strings.Trim(poruka1, "\r\n")
 
@@ -127,7 +131,7 @@ func main() {
 					glib.IdleAdd(func() { UpdateText2(poruka1) })
 				case "/join":
 					glib.IdleAdd(func() {
-						for k, _ := range players {
+						for k := range players {
 							delete(colors, k)
 							delete(players, k)
 							delete(pictures, k)
@@ -211,7 +215,7 @@ func main() {
 					fmt.Print(string(poruka1))
 				}
 
-			case porukaSlanje := <-PoslatePoruke:
+			case porukaSlanje := <-SentMessages:
 				go func() {
 					conn.Write([]byte(porukaSlanje))
 				}()
@@ -228,7 +232,7 @@ func selectPicture(counter int) string {
 }
 
 func selectColor(counter int) string {
-	color := ""
+	var color string
 	switch counter {
 	case 0:
 		color = "blue"

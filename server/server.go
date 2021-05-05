@@ -31,14 +31,14 @@ var rolesPool = []roleType{
 type server struct {
 	rooms    map[string]*room
 	commands chan command
-	imena    []string
+	names    []string
 }
 
 func newServer() *server {
 	return &server{
 		rooms:    make(map[string]*room),
 		commands: make(chan command),
-		imena:    make([]string, 0),
+		names:    make([]string, 0),
 	}
 }
 
@@ -46,7 +46,6 @@ func (s *server) run() {
 	for cmd := range s.commands {
 		activeRoom := s.commandHandler(&cmd)
 		activeRoom.dayNightHandler()
-		//cmd.client.room.dayNightHandler()
 	}
 }
 
@@ -181,9 +180,9 @@ func (s *server) quit(c *client) {
 		_ = c.conn.Close()
 	}
 
-	for index, player := range s.imena {
+	for index, player := range s.names {
 		if c.nick == player {
-			s.imena = append(s.imena[:index], s.imena[index+1:]...)
+			s.names = append(s.names[:index], s.names[index+1:]...)
 		}
 	}
 }
@@ -247,13 +246,13 @@ func (s *server) readUsername(c *client) {
 			c.msg("/firstws No whitespaces in name allowed, try again!")
 			continue
 		}
-		_, found := Find(s.imena, name)
+		_, found := Find(s.names, name)
 		if found {
 			c.msg("/firstname Username taken, try again!")
 			continue
 		}
 		c.nick = strings.Trim(msg, "\r\n")
-		s.imena = append(s.imena, c.nick)
+		s.names = append(s.names, c.nick)
 		c.msg("/open " + c.nick + " Welcome to Mafia Server.\nUse /help to see all available commands")
 		break
 	}
@@ -368,7 +367,7 @@ func (r *room) night() {
 	if killed != r.whoToHeal() && !killed.isHealed {
 		killed.isAlive = false
 		killed.msg("/dead " + killed.nick + " You have died!")
-		r.broadcast(killed, "/dead "+killed.nick+" Last night "+killed.nick+" died, RIP")
+		r.broadcast(killed, "/dead " + killed.nick + " Last night " + killed.nick + " died, RIP")
 		if killed.role == TOWN || killed.role == JESTER {
 			r.numOfTown--
 		}
@@ -377,7 +376,7 @@ func (r *room) night() {
 		if killed.role == AVENGER && r.pulled != nil {
 			r.pulled.isAlive = false
 			r.pulled.msg("/dead " + r.pulled.nick + " You have been pulled by the avenger!")
-			r.broadcast(r.pulled, "/dead "+r.pulled.nick+" Last night "+r.pulled.nick+" was pulled by the avenger, RIP")
+			r.broadcast(r.pulled, "/dead " + r.pulled.nick + " Last night " + r.pulled.nick + " was pulled by the avenger, RIP")
 			if r.pulled.role == TOWN || r.pulled.role == JESTER {
 				r.numOfTown--
 			}
@@ -391,7 +390,7 @@ func (r *room) night() {
 	if r.potionPoison != nil && r.potionPoison != killed && r.potionPoison.isAlive {
 		r.potionPoison.isAlive = false
 		r.potionPoison.msg("/dead " + r.potionPoison.nick + " You choked on an apple!")
-		r.broadcast(r.potionPoison, "/dead "+r.potionPoison.nick+" Last night "+r.potionPoison.nick+" choked on an apple, RIP")
+		r.broadcast(r.potionPoison, "/dead " + r.potionPoison.nick + " Last night " + r.potionPoison.nick + " choked on an apple, RIP")
 		if r.potionPoison.role == TOWN || r.potionPoison.role == JESTER {
 			r.numOfTown--
 		}
@@ -412,12 +411,12 @@ func (r *room) night() {
 		if isGameOver == TOWN_WON {
 			r.members[r.owner].msg("/join " + r.name + " " + players)
 			r.members[r.owner].msg("/won Town won!")
-			r.broadcast(r.members[r.owner], "/join "+r.name+" "+players)
+			r.broadcast(r.members[r.owner], "/join " + r.name + " " + players)
 			r.broadcast(r.members[r.owner], "/won Town won!")
 		} else {
 			r.members[r.owner].msg("/join " + r.name + " " + players)
 			r.members[r.owner].msg("/won Mafia won!")
-			r.broadcast(r.members[r.owner], "/join "+r.name+" "+players)
+			r.broadcast(r.members[r.owner], "/join " + r.name + " " + players)
 			r.broadcast(r.members[r.owner], "/won Mafia won!")
 		}
 		r.state = WAITING
@@ -459,9 +458,9 @@ func (r *room) day() {
 	if votekilled != nil {
 		votekilled.isAlive = false
 		votekilled.msg("/dead " + votekilled.nick + " You have died!")
-		r.broadcast(votekilled, "/dead "+votekilled.nick+" "+votekilled.nick+" was hanged on the town square, RIP")
+		r.broadcast(votekilled, "/dead " + votekilled.nick + " " + votekilled.nick + " was hanged on the town square, RIP")
 		if votekilled.role == JESTER {
-			r.broadcast(votekilled, "/join "+r.name+" "+players)
+			r.broadcast(votekilled, "/join " + r.name + " " + players)
 			r.broadcast(votekilled, "/won You hanged the jester! Why so serious?\nThe jester has won!")
 			votekilled.msg("/join " + r.name + " " + players)
 			votekilled.msg("/won You win, joker!")

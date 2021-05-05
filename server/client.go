@@ -191,17 +191,17 @@ func (c *client) readInput() {
 			if c.room == nil {
 				c.msg(fmt.Sprintf("unknown command: %s", cmd))
 			} else if c.room.state == WAITING {
-				c.room.broadcast(c, "/text2 "+c.nick+": "+msg)
+				c.room.broadcast(c, "/text2 " + c.nick + ": " + msg)
 				c.msg("/text2 " + c.nick + ": " + msg)
 			} else if !c.isAlive {
 				c.msg("/text1 You be dead")
 				break
 			} else if c.room.state == NIGHT && c.role == MAFIA {
 				c.msg("/text2 " + c.nick + ": " + msg)
-				c.room.mafiaBroadcast(c, "/text2 "+c.nick+": "+msg)
+				c.room.mafiaBroadcast(c, "/text2 " + c.nick + ": " + msg)
 			} else if c.room.state != NIGHT && c.room.state != VOTE {
 				c.msg("/text2 " + c.nick + ": " + msg)
-				c.room.broadcast(c, "/text2 "+c.nick+": "+msg)
+				c.room.broadcast(c, "/text2 " + c.nick + ": " + msg)
 			}
 		}
 	}

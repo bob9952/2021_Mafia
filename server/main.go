@@ -14,9 +14,9 @@ func main() {
 	s := newServer()
 	go s.run()
 
-	listener, err := net.Listen("tcp", ":"+strconv.Itoa(PORT))
+	listener, err := net.Listen("tcp", ":" + strconv.Itoa(PORT))
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Failed to start server: "+err.Error())
+		fmt.Fprintln(os.Stderr, "Failed to start server: " + err.Error())
 		return
 	}
 	defer listener.Close()
@@ -26,7 +26,7 @@ func main() {
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "Failed to accept client connection: "+err.Error())
+			fmt.Fprintln(os.Stderr, "Failed to accept client connection: " + err.Error())
 			continue
 		}
 		go s.newClient(conn)

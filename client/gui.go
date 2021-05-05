@@ -11,11 +11,11 @@ import (
 var text1 *gtk.TextView
 var text2 *gtk.TextView
 
-var button_grid *gtk.Grid
+var buttonGrid *gtk.Grid
 
 func createLoginWindow() *gtk.Window {
 
-	myCSSNight()
+	loadCSS("styleNight.css")
 
 	win, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
 	if err != nil {
@@ -25,7 +25,7 @@ func createLoginWindow() *gtk.Window {
 	win.SetTitle("Username")
 	win.SetPosition(gtk.WIN_POS_CENTER)
 	win.Connect("destroy", func() {
-		PoslatePoruke <- "/quit\n"
+		SentMessages <- "/quit\n"
 		gtk.MainQuit()
 	})
 
@@ -42,15 +42,15 @@ func createLoginWindow() *gtk.Window {
 	}
 	entry.SetMarginBottom(10)
 
-	btn_enter, _ := gtk.ButtonNewWithLabel("Enter username")
-	btn_enter.Connect("clicked", func() {
+	btnEnter, _ := gtk.ButtonNewWithLabel("Enter username")
+	btnEnter.Connect("clicked", func() {
 		message, _ := entry.GetText()
 		message = strings.Trim(message, "\r\n")
-		PoslatePoruke <- message + "\n"
+		SentMessages <- message + "\n"
 	})
 
 	grid.Add(entry)
-	grid.Add(btn_enter)
+	grid.Add(btnEnter)
 
 	win.Add(grid)
 
@@ -77,15 +77,15 @@ func resetToMainWindow(win *gtk.Window) {
 		log.Fatal("Grid creation failed", err)
 	}
 	grid1.SetOrientation(gtk.ORIENTATION_HORIZONTAL)
-	button_grid = grid1
+	buttonGrid = grid1
 
 	//GRID FOR THE PLAYER
-	grid_player, err := gtk.GridNew()
+	gridPlayer, err := gtk.GridNew()
 	if err != nil {
 		log.Fatal("Grid creation failed", err)
 	}
-	grid_player.SetOrientation(gtk.ORIENTATION_VERTICAL)
-	grid_player.SetBorderWidth(30)
+	gridPlayer.SetOrientation(gtk.ORIENTATION_VERTICAL)
+	gridPlayer.SetBorderWidth(30)
 
 	label, err := gtk.LabelNew(username)
 	if err != nil {
@@ -93,16 +93,16 @@ func resetToMainWindow(win *gtk.Window) {
 	}
 	label.SetMarginBottom(10)
 
-	grid_player.Add(label)
+	gridPlayer.Add(label)
 	pixbuf, _ := gdk.PixbufNewFromFile("awesomeface.png")
 	pixbuf, _ = pixbuf.ScaleSimple(100, 100, gdk.INTERP_BILINEAR)
 	img, _ := gtk.ImageNew()
 	img.SetFromPixbuf(pixbuf)
-	grid_player.Add(img)
+	gridPlayer.Add(img)
 
 	//GRID FOR THE PLAYER
 
-	grid1.Add(grid_player)
+	grid1.Add(gridPlayer)
 
 	grid2, err := gtk.GridNew()
 	if err != nil {
@@ -166,7 +166,7 @@ func resetToMainWindow(win *gtk.Window) {
 				return false
 			}
 			message = strings.Trim(message, "\r\n")
-			PoslatePoruke <- message + "\n"
+			SentMessages <- message + "\n"
 			entry.SetText("")
 		default:
 			return false
@@ -198,48 +198,27 @@ func UpdateText2(msg string) {
 		name := msg[0:index_dots]
 		buffer.InsertMarkup(end, "\n<span foreground = \""+colors[name]+"\">"+name+":</span>"+msg[index_dots+1:])
 	} else {
-		buffer.Insert(end, "\n"+msg)
+		buffer.Insert(end, "\n" + msg)
 	}
 	text2.ScrollToMark(buffer.GetMark("end"), 0.0, true, 0.5, 0.5)
 	text2.SetIndent(10)
 }
 
-func myCSSNight() {
+func loadCSS(path string) {
 
 	provider, _ := gtk.CssProviderNew()
 	display, _ := gdk.DisplayGetDefault()
 	screen, _ := display.GetDefaultScreen()
 
 	gtk.AddProviderForScreen(screen, provider, gtk.STYLE_PROVIDER_PRIORITY_USER)
-	provider.LoadFromPath("styleNight.css")
-}
-
-func myCSSDay() {
-
-	provider, _ := gtk.CssProviderNew()
-	display, _ := gdk.DisplayGetDefault()
-	screen, _ := display.GetDefaultScreen()
-
-	gtk.AddProviderForScreen(screen, provider, gtk.STYLE_PROVIDER_PRIORITY_USER)
-	provider.LoadFromPath("styleDay.css")
-}
-
-func myCSSVote() {
-
-	provider, _ := gtk.CssProviderNew()
-	display, _ := gdk.DisplayGetDefault()
-	screen, _ := display.GetDefaultScreen()
-
-	gtk.AddProviderForScreen(screen, provider, gtk.STYLE_PROVIDER_PRIORITY_USER)
-	provider.LoadFromPath("styleVote.css")
+	provider.LoadFromPath(path)
 }
 
 func UpdateJoin(win *gtk.Window, players map[string]bool) {
 
-	children := button_grid.GetChildren()
+	children := buttonGrid.GetChildren()
 	for child := children; child != nil; child = child.Next() {
 		child.Data().(*gtk.Widget).Destroy()
-		//button_grid.Remove(child.First())
 	}
 
 	keys := make([]string, 0)
@@ -249,9 +228,9 @@ func UpdateJoin(win *gtk.Window, players map[string]bool) {
 	sort.Strings(keys)
 
 	for _, player := range keys {
-		grid_player, _ := gtk.GridNew()
-		grid_player.SetOrientation(gtk.ORIENTATION_VERTICAL)
-		grid_player.SetBorderWidth(30)
+		gridPlayer, _ := gtk.GridNew()
+		gridPlayer.SetOrientation(gtk.ORIENTATION_VERTICAL)
+		gridPlayer.SetBorderWidth(30)
 
 		label, _ := gtk.LabelNew(player)
 
@@ -260,26 +239,26 @@ func UpdateJoin(win *gtk.Window, players map[string]bool) {
 		img, _ := gtk.ImageNew()
 		img.SetFromPixbuf(pixbuf)
 
-		grid_player.Add(label)
-		grid_player.Add(img)
+		gridPlayer.Add(label)
+		gridPlayer.Add(img)
 
 		if player == username && isOwner {
 
-			btn_player, _ := gtk.ButtonNewWithLabel("start")
-			btn_player.SetName(player)
+			btnPlayer, _ := gtk.ButtonNewWithLabel("start")
+			btnPlayer.SetName(player)
 
-			btn_player.Connect("clicked", func() {
-				PoslatePoruke <- "/start\n"
+			btnPlayer.Connect("clicked", func() {
+				SentMessages <- "/start\n"
 			})
 
-			grid_player.Add(btn_player)
+			gridPlayer.Add(btnPlayer)
 		}
 		if player == username {
 			context, _ := label.GetStyleContext()
 			context.AddClass("labela_username")
 		}
 
-		button_grid.Add(grid_player)
+		buttonGrid.Add(gridPlayer)
 
 		win.ShowAll()
 	}
@@ -287,12 +266,11 @@ func UpdateJoin(win *gtk.Window, players map[string]bool) {
 
 func UpdateNight(win *gtk.Window, players map[string]bool) {
 
-	myCSSNight()
+	loadCSS("styleNight.css")
 
-	children := button_grid.GetChildren()
+	children := buttonGrid.GetChildren()
 	for child := children; child != nil; child = child.Next() {
 		child.Data().(*gtk.Widget).Destroy()
-		//button_grid.Remove(child.First())
 	}
 
 	keys := make([]string, 0)
@@ -303,9 +281,9 @@ func UpdateNight(win *gtk.Window, players map[string]bool) {
 
 	for _, player := range keys {
 		alive := players[player]
-		grid_player, _ := gtk.GridNew()
-		grid_player.SetOrientation(gtk.ORIENTATION_VERTICAL)
-		grid_player.SetBorderWidth(30)
+		gridPlayer, _ := gtk.GridNew()
+		gridPlayer.SetOrientation(gtk.ORIENTATION_VERTICAL)
+		gridPlayer.SetBorderWidth(30)
 
 		label, _ := gtk.LabelNew(player)
 
@@ -314,8 +292,8 @@ func UpdateNight(win *gtk.Window, players map[string]bool) {
 		img, _ := gtk.ImageNew()
 		img.SetFromPixbuf(pixbuf)
 
-		grid_player.Add(label)
-		grid_player.Add(img)
+		gridPlayer.Add(label)
+		gridPlayer.Add(img)
 
 		if player != username && role != TOWN && role != JESTER && role != WITCH && alive && players[username] {
 			var caption string
@@ -329,69 +307,69 @@ func UpdateNight(win *gtk.Window, players map[string]bool) {
 			case AVENGER:
 				caption = "pull"
 			}
-			btn_player, _ := gtk.ButtonNewWithLabel(caption)
-			btn_player.SetName(player)
+			btnPlayer, _ := gtk.ButtonNewWithLabel(caption)
+			btnPlayer.SetName(player)
 
-			btn_player.Connect("clicked", func() {
+			btnPlayer.Connect("clicked", func() {
 				labelText, _ := label.GetText()
-				PoslatePoruke <- "/" + caption + " " + labelText + "\n"
+				SentMessages <- "/" + caption + " " + labelText + "\n"
 			})
 
-			grid_player.Add(btn_player)
+			gridPlayer.Add(btnPlayer)
 		}
 		if player == username && role == DOCTOR && alive {
 			caption := "protect"
-			btn_player, _ := gtk.ButtonNewWithLabel(caption)
-			btn_player.SetName(player)
+			btnPlayer, _ := gtk.ButtonNewWithLabel(caption)
+			btnPlayer.SetName(player)
 
-			btn_player.Connect("clicked", func() {
+			btnPlayer.Connect("clicked", func() {
 				labelText, _ := label.GetText()
-				PoslatePoruke <- "/" + caption + " " + labelText + "\n"
+				SentMessages <- "/" + caption + " " + labelText + "\n"
 			})
 
-			grid_player.Add(btn_player)
+			gridPlayer.Add(btnPlayer)
 		}
 		if role == WITCH && alive && players[username] {
 			var caption_heal = "heal"
-			btn_player1, _ := gtk.ButtonNewWithLabel(caption_heal)
-			btn_player1.SetName(player)
+			btnPlayer1, _ := gtk.ButtonNewWithLabel(caption_heal)
+			btnPlayer1.SetName(player)
 
-			btn_player1.Connect("clicked", func() {
+			btnPlayer1.Connect("clicked", func() {
 				labelText, _ := label.GetText()
-				PoslatePoruke <- "/" + caption_heal + " " + labelText + "\n"
+				SentMessages <- "/" + caption_heal + " " + labelText + "\n"
 			})
 
-			grid_player.Add(btn_player1)
+			gridPlayer.Add(btnPlayer1)
 
 			var caption_poison = "poison"
-			btn_player2, _ := gtk.ButtonNewWithLabel(caption_poison)
-			btn_player2.SetName(player)
+			btnPlayer2, _ := gtk.ButtonNewWithLabel(caption_poison)
+			btnPlayer2.SetName(player)
 
-			btn_player2.Connect("clicked", func() {
+			btnPlayer2.Connect("clicked", func() {
 				labelText, _ := label.GetText()
-				PoslatePoruke <- "/" + caption_poison + " " + labelText + "\n"
+				SentMessages <- "/" + caption_poison + " " + labelText + "\n"
 			})
 
-			grid_player.Add(btn_player2)
+			gridPlayer.Add(btnPlayer2)
 			
-			btn_player3, _ := gtk.ButtonNewWithLabel("skip")
-			btn_player3.SetName(player)
+			btnPlayer3, _ := gtk.ButtonNewWithLabel("skip")
+			btnPlayer3.SetName(player)
 
-			btn_player3.Connect("clicked", func() {
-				PoslatePoruke <- "/poison skip\n"
+			btnPlayer3.Connect("clicked", func() {
+				SentMessages <- "/poison skip\n"
 			})
 
-			grid_player.Add(btn_player3)
+			gridPlayer.Add(btnPlayer3)
 		}
 		if role == AVENGER && alive && players[username] {
-			btn_player1, _ := gtk.ButtonNewWithLabel("skip")
-			btn_player1.SetName(player)
+			btnPlayer1, _ := gtk.ButtonNewWithLabel("skip")
+			btnPlayer1.SetName(player)
 
-			btn_player1.Connect("clicked", func() {
-				PoslatePoruke <- "/" + "pull skip" + "\n"
+			btnPlayer1.Connect("clicked", func() {
+				SentMessages <- "/pull skip\n"
 			})
 			
-			grid_player.Add(btn_player1)
+			gridPlayer.Add(btnPlayer1)
 		}
 
 		if player == username {
@@ -399,7 +377,7 @@ func UpdateNight(win *gtk.Window, players map[string]bool) {
 			context.AddClass("labela_username")
 		}
 
-		button_grid.Add(grid_player)
+		buttonGrid.Add(gridPlayer)
 
 		win.ShowAll()
 	}
@@ -407,12 +385,11 @@ func UpdateNight(win *gtk.Window, players map[string]bool) {
 
 func UpdateDay(win *gtk.Window, players map[string]bool) {
 
-	myCSSDay()
+	loadCSS("styleDay.css")
 
-	children := button_grid.GetChildren()
+	children := buttonGrid.GetChildren()
 	for child := children; child != nil; child = child.Next() {
 		child.Data().(*gtk.Widget).Destroy()
-		//button_grid.Remove(child.First())
 	}
 
 	keys := make([]string, 0)
@@ -422,9 +399,9 @@ func UpdateDay(win *gtk.Window, players map[string]bool) {
 	sort.Strings(keys)
 
 	for _, player := range keys {
-		grid_player, _ := gtk.GridNew()
-		grid_player.SetOrientation(gtk.ORIENTATION_VERTICAL)
-		grid_player.SetBorderWidth(30)
+		gridPlayer, _ := gtk.GridNew()
+		gridPlayer.SetOrientation(gtk.ORIENTATION_VERTICAL)
+		gridPlayer.SetBorderWidth(30)
 
 		label, _ := gtk.LabelNew(player)
 
@@ -433,10 +410,10 @@ func UpdateDay(win *gtk.Window, players map[string]bool) {
 		img, _ := gtk.ImageNew()
 		img.SetFromPixbuf(pixbuf)
 
-		grid_player.Add(label)
-		grid_player.Add(img)
+		gridPlayer.Add(label)
+		gridPlayer.Add(img)
 
-		button_grid.Add(grid_player)
+		buttonGrid.Add(gridPlayer)
 
 		if player == username {
 			context, _ := label.GetStyleContext()
@@ -449,12 +426,11 @@ func UpdateDay(win *gtk.Window, players map[string]bool) {
 
 func UpdateVote(win *gtk.Window, players map[string]bool) {
 
-	myCSSVote()
+	loadCSS("styleVote.css")
 
-	children := button_grid.GetChildren()
+	children := buttonGrid.GetChildren()
 	for child := children; child != nil; child = child.Next() {
 		child.Data().(*gtk.Widget).Destroy()
-		//button_grid.Remove(child.First())
 	}
 
 	keys := make([]string, 0)
@@ -465,9 +441,9 @@ func UpdateVote(win *gtk.Window, players map[string]bool) {
 
 	for _, player := range keys {
 		alive := players[player]
-		grid_player, _ := gtk.GridNew()
-		grid_player.SetOrientation(gtk.ORIENTATION_VERTICAL)
-		grid_player.SetBorderWidth(30)
+		gridPlayer, _ := gtk.GridNew()
+		gridPlayer.SetOrientation(gtk.ORIENTATION_VERTICAL)
+		gridPlayer.SetBorderWidth(30)
 
 		label, _ := gtk.LabelNew(player)
 
@@ -476,29 +452,29 @@ func UpdateVote(win *gtk.Window, players map[string]bool) {
 		img, _ := gtk.ImageNew()
 		img.SetFromPixbuf(pixbuf)
 
-		grid_player.Add(label)
-		grid_player.Add(img)
+		gridPlayer.Add(label)
+		gridPlayer.Add(img)
 
 		if player != username && alive && players[username] {
 
-			btn_player, _ := gtk.ButtonNewWithLabel("vote")
-			btn_player.SetName(player)
+			btnPlayer, _ := gtk.ButtonNewWithLabel("vote")
+			btnPlayer.SetName(player)
 
-			btn_player.Connect("clicked", func() {
+			btnPlayer.Connect("clicked", func() {
 				labelText, _ := label.GetText()
-				PoslatePoruke <- "/" + "vote" + " " + labelText + "\n"
+				SentMessages <- "/" + "vote" + " " + labelText + "\n"
 			})
 
-			grid_player.Add(btn_player)
+			gridPlayer.Add(btnPlayer)
 		} else if player == username && alive && players[username] {
-			btn_player, _ := gtk.ButtonNewWithLabel("skip")
-			btn_player.SetName(player)
+			btnPlayer, _ := gtk.ButtonNewWithLabel("skip")
+			btnPlayer.SetName(player)
 
-			btn_player.Connect("clicked", func() {
-				PoslatePoruke <- "/" + "vote skip" + "\n"
+			btnPlayer.Connect("clicked", func() {
+				SentMessages <- "/vote skip\n"
 			})
 
-			grid_player.Add(btn_player)
+			gridPlayer.Add(btnPlayer)
 		}
 
 		if player == username {
@@ -506,7 +482,7 @@ func UpdateVote(win *gtk.Window, players map[string]bool) {
 			context.AddClass("labela_username")
 		}
 
-		button_grid.Add(grid_player)
+		buttonGrid.Add(gridPlayer)
 
 		win.ShowAll()
 	}

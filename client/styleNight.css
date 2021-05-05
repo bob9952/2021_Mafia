@@ -1,43 +1,41 @@
 window {
-    background-image: url("night.png");
-    background-repeat: repeat-x;
-    background-size: cover;
+  background-image: url("night.png");
+  background-repeat: repeat-x;
+  background-size: cover;
 }
 
 button {
-    background: darkred;
-    border-radius: 10px;
+  background: darkred;
+  border-radius: 10px;
 }
 
-entry{
-    color: lightskyblue;
-    background-color: darkslategray;
-    font-size: 18px;
-    border: 2px solid darkgoldenrod;
-    border-radius: 5px;
+entry {
+  color: lightskyblue;
+  background-color: darkslategray;
+  font-size: 18px;
+  border: 2px solid darkgoldenrod;
+  border-radius: 5px;
 }
 
-label{
-    color: lightgrey;
-    background-color: darkred;
-    border-radius: 5px;
-    font-size: 20px;
+label {
+  color: lightgrey;
+  background-color: darkred;
+  font-size: 20px;
+  border-radius: 5px;
 }
 
-textview text{
-    color: lightskyblue;
-    background-color: darkslategray;
-    font-size: 18px;
-    border: 2px solid darkgoldenrod;
-    border-radius: 15px;
-
-
+textview text {
+  color: lightskyblue;
+  background-color: darkslategray;
+  font-size: 18px;
+  border: 2px solid darkgoldenrod;
+  border-radius: 15px;
 }
 
-scrolledwindow textview{
-    background-color: brown;
+scrolledwindow textview {
+  background-color: brown;
 }
 
-.labela_username{
-    background-color: green;
+.labela_username {
+  background-color: green;
 }
