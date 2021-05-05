@@ -25,9 +25,9 @@ const (
 	JESTER
 )
 
-// Channel for sending messages to the server
+// SentMessages - Channel for sending messages to the server
 var SentMessages = make(chan string)
-// Channel for incoming messages from the server
+// ReceivedMessages - Channel for incoming messages from the server
 var ReceivedMessages = make(chan string)
 
 var isOwner bool

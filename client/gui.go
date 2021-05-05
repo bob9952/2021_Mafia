@@ -188,15 +188,15 @@ func UpdateText1(msg string) {
 
 func UpdateText2(msg string) {
 
-	index_dots := strings.Index(msg, ":")
-	index_blank := strings.Index(msg, " ")
+	indexDots := strings.Index(msg, ":")
+	indexBlank := strings.Index(msg, " ")
 
 	buffer, _ := text2.GetBuffer()
 	_, end := buffer.GetBounds()
-	if index_dots != -1 && index_blank > index_dots {
+	if indexDots != -1 && indexBlank > indexDots {
 
-		name := msg[0:index_dots]
-		buffer.InsertMarkup(end, "\n<span foreground = \""+colors[name]+"\">"+name+":</span>"+msg[index_dots+1:])
+		name := msg[0:indexDots]
+		buffer.InsertMarkup(end, "\n<span foreground = \""+colors[name]+"\">"+name+":</span>"+msg[indexDots+1:])
 	} else {
 		buffer.Insert(end, "\n" + msg)
 	}
@@ -222,7 +222,7 @@ func UpdateJoin(win *gtk.Window, players map[string]bool) {
 	}
 
 	keys := make([]string, 0)
-	for k, _ := range players {
+	for k := range players {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
@@ -330,24 +330,24 @@ func UpdateNight(win *gtk.Window, players map[string]bool) {
 			gridPlayer.Add(btnPlayer)
 		}
 		if role == WITCH && alive && players[username] {
-			var caption_heal = "heal"
-			btnPlayer1, _ := gtk.ButtonNewWithLabel(caption_heal)
+			var captionHeal = "heal"
+			btnPlayer1, _ := gtk.ButtonNewWithLabel(captionHeal)
 			btnPlayer1.SetName(player)
 
 			btnPlayer1.Connect("clicked", func() {
 				labelText, _ := label.GetText()
-				SentMessages <- "/" + caption_heal + " " + labelText + "\n"
+				SentMessages <- "/" + captionHeal + " " + labelText + "\n"
 			})
 
 			gridPlayer.Add(btnPlayer1)
 
-			var caption_poison = "poison"
-			btnPlayer2, _ := gtk.ButtonNewWithLabel(caption_poison)
+			var captionPoison = "poison"
+			btnPlayer2, _ := gtk.ButtonNewWithLabel(captionPoison)
 			btnPlayer2.SetName(player)
 
 			btnPlayer2.Connect("clicked", func() {
 				labelText, _ := label.GetText()
-				SentMessages <- "/" + caption_poison + " " + labelText + "\n"
+				SentMessages <- "/" + captionPoison + " " + labelText + "\n"
 			})
 
 			gridPlayer.Add(btnPlayer2)
