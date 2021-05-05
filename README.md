@@ -44,8 +44,10 @@ To list the game's commands type /help into the bottom text box.
 With those you can join and leave rooms, see all available rooms and list all
 the players in the current room.
 
-![alt text](https://ibb.co/5hm0188)
-![alt text](https://ibb.co/MZ4ZCwh)
+#### Gameplay
+
+![alt text](https://i.ibb.co/RTfFg00/screenshot1.png)
+![alt text](https://i.ibb.co/rFSFw8t/screenshot2.png)
 
 #### Authors
 -   **Aleksandar Stefanovic**
